@@ -7,4 +7,4 @@ route = APIRouter()
 
 @route.get('/')
 def index():
-    return {"data": "hello"}
+    return {"data": "hello world"}
