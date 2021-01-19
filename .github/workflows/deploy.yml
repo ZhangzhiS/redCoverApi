@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
 
     steps: # 自动化步骤
       - uses: actions/checkout@v2 # 第一步，下载代码仓库
