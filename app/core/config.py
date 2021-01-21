@@ -1,7 +1,14 @@
 #!/usr/bin/env python3.9
 # -*- coding: utf-8 -*-
 import secrets
-from pydantic import BaseSettings
+import os
+from pydantic import BaseSettings, BaseModel
+
+
+class WeChatConfig(BaseModel):
+
+    appid: str
+    app_secret: str
 
 
 class Settings(BaseSettings):
@@ -9,5 +16,13 @@ class Settings(BaseSettings):
     PROJECT_NAME: str
     WECHAT_TOKEN: str = "azhizhizhia"
 
+    WECHAT_CONF: WeChatConfig
 
-settings = Settings(PROJECT_NAME="wallet")
+
+settings = Settings(
+    PROJECT_NAME=os.getenv("PROJECT_NAME"),
+    WECHAT_CONF=WeChatConfig(
+        appid=os.getenv("WECHAT_APPID"),
+        app_secret=os.getenv("WECHAT_APP_SECRET")
+    )
+)
