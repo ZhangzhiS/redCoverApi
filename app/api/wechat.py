@@ -13,7 +13,7 @@ def check_token(
         signature: str,
         timestamp: str,
         nonce: str,
-        echo_str: str
+        echostr: str
 ):
     """
     校验微信服务
@@ -26,5 +26,5 @@ def check_token(
     sha1.update(s.encode(encoding="utf-8"))
     hashcode = sha1.hexdigest()
     if hashcode == signature:
-        return int(echo_str)
+        return int(echostr)
     return ""
