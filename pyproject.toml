@@ -8,6 +8,7 @@ authors = ["zhangzhi <781029588@qq.com>"]
 python = "^3.9"
 fastapi = "^0.63.0"
 uvicorn = "^0.13.3"
+environs = "^9.3.0"
 
 [tool.poetry.dev-dependencies]
 

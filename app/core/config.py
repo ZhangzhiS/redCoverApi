@@ -1,7 +1,6 @@
 #!/usr/bin/env python3.9
 # -*- coding: utf-8 -*-
-import secrets
-import os
+from environs import Env
 from pydantic import BaseSettings, BaseModel
 
 
@@ -19,10 +18,11 @@ class Settings(BaseSettings):
     WECHAT_CONF: WeChatConfig
 
 
+env = Env()
 settings = Settings(
-    PROJECT_NAME=os.getenv("PROJECT_NAME"),
+    PROJECT_NAME=env.str("PROJECT_NAME"),
     WECHAT_CONF=WeChatConfig(
-        appid=os.getenv("WECHAT_APPID"),
-        app_secret=os.getenv("WECHAT_APP_SECRET")
+        appid=env.str("WECHAT_APPID"),
+        app_secret=env.str("WECHAT_APP_SECRET")
     )
 )
