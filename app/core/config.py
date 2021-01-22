@@ -19,6 +19,7 @@ class Settings(BaseSettings):
 
 
 env = Env()
+env.read_env()
 settings = Settings(
     PROJECT_NAME=env.str("PROJECT_NAME"),
     WECHAT_CONF=WeChatConfig(
