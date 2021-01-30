@@ -1,5 +1,6 @@
 #!/usr/bin/env python3.9
 # -*- coding: utf-8 -*-
+import os
 from typing import Optional, Dict, Any
 
 from environs import Env
@@ -36,8 +37,13 @@ class Settings(BaseSettings):
         )
 
 
+# try:
 env = Env()
-env.read_env()
+env_path = "/etc/make-money"
+if os.path.exists(env_path):
+    env.read_env(env_path)
+else:
+    env.read_env()
 settings = Settings(
     PROJECT_NAME=env.str("PROJECT_NAME"),
 )
