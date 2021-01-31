@@ -22,7 +22,7 @@ class MiniAppInviteUserUpdate(MiniAppInviteUserBase):
 
 
 class MiniAppInviteUserInDbBase(MiniAppInviteUserBase):
-    pass
+    app_id: Optional[int]
 
     class Config:
         orm_mode = True

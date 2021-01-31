@@ -3,6 +3,8 @@
 """
 红包封面小程序接口
 """
+from typing import List, Optional
+
 from fastapi import APIRouter, Depends, Body
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -10,7 +12,8 @@ from sqlalchemy.orm import Session
 from app.api import deps
 from app.controller import miniapp
 from app import schemas
-from app.schemas import MiniAppInviteUserCreate, MiniAppInviteUser
+from app.schemas import MiniAppInviteUserCreate, MiniAppInviteUser, Cps, RedCover
+from app.schemas import MiniAppTip
 
 route = APIRouter()
 
@@ -44,3 +47,66 @@ def invite_track(
         app_id, invite_user.openid, invite_user.invite_openid, db
     )
     return result
+
+
+@route.get("/{app_id}/cps", response_model=List[Cps])
+def get_cps_list(
+        *,
+        db: Session = Depends(deps.get_db),
+        app_id: int
+):
+    result = miniapp.get_cps_list(app_id, db)
+    return result
+
+
+@route.get("/{app_id}/cover", response_model=List[RedCover])
+def get_covers(
+        *,
+        db: Session = Depends(deps.get_db),
+        app_id: int
+):
+    return miniapp.get_covers(app_id, db)
+
+
+@route.get("/{app_id}/tip", response_model=List[str])
+def get_tips(
+        *,
+        db: Session = Depends(deps.get_db),
+        app_id: int,
+        page: Optional[str] = None,
+        item_id: Optional[int] = None
+):
+    res = miniapp.get_tips(app_id, db, page, item_id)
+    return [i.tip for i in res]
+
+
+@route.get("/{app_id}/cover/detail")
+def get_cover_detail(
+        *,
+        db: Session = Depends(deps.get_db),
+        app_id: int,
+        cover_id: int,
+        openid: str
+):
+    return miniapp.get_cover_detail(cover_id, openid, app_id, db)
+
+
+@route.get("/{app_id}/ad/track")
+def ad_track(
+        *,
+        db: Session = Depends(deps.get_db),
+        app_id: int,
+        openid: str,
+):
+
+    return {
+        "app_id": app_id,
+        "ad_config": {
+            "one": "",
+            "two": "",
+            "three": "",
+            "four": "",
+            "five": ""
+        }
+    }
+
