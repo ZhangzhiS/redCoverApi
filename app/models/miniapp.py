@@ -25,4 +25,13 @@ class MiniAppUser(Base):
     app_id = Column(Integer, comment="系统中小程序的id", index=True)
     openid = Column(String, comment="微信用户在此小程序中的openid")
     session_key = Column(String, comment="用户的session_key")
-    created_at = Column(DateTime, default=datetime.now(), comment="注册时间")
+    created_at = Column(DateTime, default=datetime.now, comment="注册时间")
+
+
+class InviteUser(Base):
+    """用户邀请关系表"""
+    id = Column(Integer, primary_key=True)
+    app_id = Column(Integer, comment="系统中小程序的id", index=True)
+    openid = Column(String, comment="用户的openid")
+    invite_openid = Column(String, comment="被邀请的用户的openid")
+    created_at = Column(DateTime, default=datetime.now, comment="邀请时间")
