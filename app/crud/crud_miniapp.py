@@ -45,20 +45,28 @@ class CRUDMiniAppInviteUser(
             self,
             db: Session,
             app_id: int,
-            openid: str,
             invite_openid: str
     ) -> Optional[InviteUser]:
+        """
+        校验用户是否被邀请过，如果被邀请过，则不算入邀请人数
+        :param db:
+        :param app_id:
+        :param invite_openid:
+        :return:
+        """
         return db.query(self.model).filter(
-            self.model.openid == openid,
             self.model.app_id == app_id,
             self.model.invite_openid == invite_openid
         ).first()
 
-    def get_invite_count(self, db: Session, openid: str, app_id: int):
+    def get_invite_count(
+            self, db: Session, openid: str, app_id: int, cover_id: int
+    ):
         """获取用户邀请好友的总数"""
         return db.query(self.model).filter(
             self.model.app_id == app_id,
-            self.model.openid == openid
+            self.model.openid == openid,
+            self.model.cover_id == cover_id,
         ).count()
 
 

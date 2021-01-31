@@ -34,6 +34,7 @@ class InviteUser(Base):
     app_id = Column(Integer, comment="系统中小程序的id", index=True)
     openid = Column(String, comment="用户的openid")
     invite_openid = Column(String, comment="被邀请的用户的openid")
+    cover_id = Column(Integer, comment="封面id")
     created_at = Column(DateTime, default=datetime.now, comment="邀请时间")
 
 

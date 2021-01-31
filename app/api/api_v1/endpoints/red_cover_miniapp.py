@@ -43,7 +43,8 @@ def invite_track(
         app_id: int,
         invite_user: MiniAppInviteUserCreate
 ):
-    print(invite_user.json())
+    """openid: 分享链接所属的openid，invite_openid: 被邀请的用户的openid"""
+    # print(invite_user.json())
     result = miniapp.track_invite_user(
         app_id, invite_user.openid, invite_user.invite_openid, db
     )
