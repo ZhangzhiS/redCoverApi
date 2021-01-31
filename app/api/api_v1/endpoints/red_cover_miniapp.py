@@ -43,6 +43,7 @@ def invite_track(
         app_id: int,
         invite_user: MiniAppInviteUserCreate
 ):
+    print(invite_user.json())
     result = miniapp.track_invite_user(
         app_id, invite_user.openid, invite_user.invite_openid, db
     )
