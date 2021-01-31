@@ -39,7 +39,7 @@ class Settings(BaseSettings):
 
 # try:
 env = Env()
-env_path = "/etc/make-money"
+env_path = "/etc/make-money/.env"
 if os.path.exists(env_path):
     env.read_env(env_path)
 else:
