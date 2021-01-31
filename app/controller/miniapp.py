@@ -21,17 +21,17 @@ def get_user_info(app_id: int, code: str, db):
     """
     config = crud.mini_app_config.get(db, app_id)
     print(code)
-    # result = requests.get(
-    #     url="https://api.weixin.qq.com/sns/jscode2session",
-    #     params={
-    #         "appid": config.appid,
-    #         "app_secret": config.app_secret,
-    #         "js_code": code,
-    #         "grant_type": "authorization_code"
-    #     },
-    # ).json()
+    result = requests.get(
+        url="https://api.weixin.qq.com/sns/jscode2session",
+        params={
+            "appid": config.appid,
+            "secret": config.app_secret,
+            "js_code": code,
+            "grant_type": "authorization_code"
+        },
+    ).json()
     # return result
-    openid = "t"
+    openid = result.get("openid")
     user = crud.mini_app_user.get_by_openid(db, openid)
     if user:
         return user
@@ -95,7 +95,7 @@ def get_cover_detail(cover_id: int, openid: str, app_id: int, db: Any):
         "look_ad_count": look_ad_count,
         "invite_count": invite_count,
         "tips": [i.tip for i in tips],
-        "receive_data": f"领取封面-{cover.id}-{openid}",
+        "receive_data": cover.receive_desc if cover.is_free else f"领取封面-{cover.id}-{openid}",
         "ad_config": {
             "one": "",
             "two": "",
