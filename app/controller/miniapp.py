@@ -114,7 +114,11 @@ def get_cover_detail(cover_id: int, openid: str, app_id: int, db: Any):
         result["is_task_success"] = is_task_success
         return result
     if cover.is_task_together:
-        if look_ad_count >= cover.ad_limit and invite_count >= cover.invite_limit:
+        if (
+                look_ad_count >= cover.ad_limit > 0
+        ) and (
+                invite_count >= cover.invite_limit > 0
+        ):
             is_task_success = True
     else:
 
