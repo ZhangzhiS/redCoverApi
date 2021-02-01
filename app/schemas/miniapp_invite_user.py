@@ -14,6 +14,7 @@ class MiniAppInviteUserBase(BaseModel):
 class MiniAppInviteUserCreate(MiniAppInviteUserBase):
     id: Optional[int] = None
     app_id: Optional[int]
+    cover_id: Optional[int]
     created_at: Optional[datetime]
 
 

@@ -43,13 +43,17 @@ def get_user_info(app_id: int, code: str, db):
     )
 
 
-def track_invite_user(app_id: int, openid: str, invite_openid: str, db: Any):
+def track_invite_user(
+        app_id: int, openid: str, invite_openid: str, db: Any,
+        cover_id: int
+):
     """
     邀请新用户的逻辑
     :param app_id:
     :param openid:
     :param invite_openid:
     :param db:
+    :param cover_id:
     :return: 返回邀请之后的数据
     """
     invite_user = crud.mini_app_invite.check_invite(
@@ -62,7 +66,8 @@ def track_invite_user(app_id: int, openid: str, invite_openid: str, db: Any):
         obj_in=MiniAppInviteUserCreate(
             app_id=app_id,
             openid=openid,
-            invite_openid=invite_openid
+            invite_openid=invite_openid,
+            cover_id=cover_id
         )
     )
 
