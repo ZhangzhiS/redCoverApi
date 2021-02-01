@@ -1,3 +1,4 @@
+import os
 from logging.config import fileConfig
 # import os
 
@@ -8,7 +9,11 @@ from sqlalchemy import pool
 from alembic import context
 
 env = Env()
-env.read_env()
+env_path = "/etc/make-money/.env"
+if os.path.exists(env_path):
+    env.read_env(env_path)
+else:
+    env.read_env()
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
