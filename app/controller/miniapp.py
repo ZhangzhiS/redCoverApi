@@ -20,7 +20,6 @@ def get_user_info(app_id: int, code: str, db):
     :return: 返回用户信息
     """
     config = crud.mini_app_config.get(db, app_id)
-    print(code)
     result = requests.get(
         url="https://api.weixin.qq.com/sns/jscode2session",
         params={
@@ -86,6 +85,8 @@ def get_tips(app_id: int, db: Any, page: Optional[str], item_id: Optional[int]):
 def get_cover_detail(cover_id: int, openid: str, app_id: int, db: Any):
     """获取封面详情"""
     cover = crud.red_cover.get(db, cover_id)
+    if not cover:
+        return {}
     look_ad_count = crud.wx_ad.get_look_history_count(db, app_id, cover_id, openid)
     invite_count = crud.mini_app_invite.get_invite_count(db, openid, app_id, cover_id)
     tips = crud.tip.get_tips_list(db, app_id, page="cover_detail", item_id=cover_id)
