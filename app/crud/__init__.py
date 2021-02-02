@@ -5,4 +5,4 @@
 """
 
 from .crud_miniapp import mini_app_user, mini_app_config, mini_app_invite, cps, red_cover, tip
-from .crud_miniapp import wx_ad
+from .crud_miniapp import wx_ad, red_cover_serial, red_cover_received

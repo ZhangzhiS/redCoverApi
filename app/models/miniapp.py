@@ -91,3 +91,24 @@ class AdHistory(Base):
     status = Column(Boolean, comment="本次观看广告是否有效")
     cover_id = Column(Integer, comment="红包封面id")
     created_at = Column(DateTime, default=datetime.now, comment="创建时间")
+
+
+class RedCoverReceived(Base):
+    """红包封面领取记录"""
+    id = Column(Integer, primary_key=True)
+    app_id = Column(Integer, comment="系统中小程序的id", index=True)
+    openid = Column(String, comment="用户的openid")
+    cover_id = Column(Integer, comment="红包封面的id")
+    red_cover_serial = Column(String, comment="使用的序列号")
+    created_at = Column(DateTime, default=datetime.now)
+
+
+class RedCoverSerial(Base):
+    """红包封面序列号"""
+    id = Column(Integer, primary_key=True)
+    app_id = Column(Integer, comment="系统中小程序的id", index=True)
+    cover_id = Column(Integer, comment="红包封面的id")
+    red_cover_serial = Column(String, comment="封面序列号")
+    status = Column(Boolean, default=True, comment="序列号状态，False表示被人领取了")
+    created_at = Column(DateTime, default=datetime.now)
+

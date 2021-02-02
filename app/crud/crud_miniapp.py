@@ -6,12 +6,15 @@ from sqlalchemy.orm import Session
 
 from app.crud.base import CRUDBase
 from app.models.miniapp import MiniAppConfig, MiniAppUser, InviteUser, Coupon, RedCover, MiniAppTip, AdHistory
+from app.models.miniapp import RedCoverSerial, RedCoverReceived
 from app.schemas import MiniAppUserUpdate, MiniAppUserCreate, WxAdCreate, WxAdUpdate
 from app.schemas import MiniAppInviteUserCreate, MiniAppInviteUserUpdate
 from app.schemas import MiniAppConfigCreate, MiniAppConfigUpdate
 from app.schemas import CpsCreate, CpsUpdate
 from app.schemas import RedCoverCreate, RedCoverUpdate
 from app.schemas import MiniAppTipCreate, MiniAppTipUpdate
+from app.schemas import RedCoverReceivedCreate, RedCoverReceivedUpdate
+from app.schemas import RedCoverSerialCreate, RedCoverSerialUpdate
 
 
 class CRUDMiniAppConfig(
@@ -29,6 +32,7 @@ class CRUDMiniAppUser(
     """
     小程序用户相关
     """
+
     def get_by_openid(self, db: Session, openid: str) -> Optional[MiniAppUser]:
         return db.query(self.model).filter(
             self.model.openid == openid
@@ -41,6 +45,7 @@ class CRUDMiniAppInviteUser(
     """
     小程序用户相关
     """
+
     def check_invite(
             self,
             db: Session,
@@ -106,8 +111,8 @@ class CRUDTip(CRUDBase[MiniAppTip, MiniAppTipCreate, MiniAppTipUpdate]):
 
 class CRUDWxAd(CRUDBase[AdHistory, WxAdCreate, WxAdUpdate]):
     def get_look_history_count(
-        self, db: Session, app_id: int, cover_id: int, openid: str,
-        status: bool = True
+            self, db: Session, app_id: int, cover_id: int, openid: str,
+            status: bool = True
     ):
         return db.query(self.model).filter(
             self.model.app_id == app_id,
@@ -117,6 +122,36 @@ class CRUDWxAd(CRUDBase[AdHistory, WxAdCreate, WxAdUpdate]):
         ).count()
 
 
+class CRUDRedCoverReceived(
+    CRUDBase[RedCoverReceived, RedCoverReceivedCreate, RedCoverReceivedUpdate]
+):
+    def check_received(
+            self, db: Session, app_id: int, cover_id: int, openid: str
+    ):
+        """
+        校验是否领取过该封面
+        """
+        return db.query(self.model).filter(
+            self.model.app_id == app_id,
+            self.model.openid == openid,
+            self.model.cover_id == cover_id,
+        ).first()
+
+
+class CRUDRedCoverSerial(
+    CRUDBase[RedCoverSerial, RedCoverSerialCreate, RedCoverSerialUpdate]
+):
+
+    def get_effective_code(
+            self, db: Session, app_id: int, cover_id: int
+    ) -> RedCoverSerial:
+        return db.query(self.model).filter(
+            self.model.app_id == app_id,
+            self.model.cover_id == cover_id,
+            self.model.status.is_(True)
+        ).first()
+
+
 mini_app_config = CRUDMiniAppConfig(MiniAppConfig)
 mini_app_user = CRUDMiniAppUser(MiniAppUser)
 mini_app_invite = CRUDMiniAppInviteUser(InviteUser)
@@ -124,3 +159,5 @@ cps = CRUDCps(Coupon)
 red_cover = CRUDRedCover(RedCover)
 tip = CRUDTip(MiniAppTip)
 wx_ad = CRUDWxAd(AdHistory)
+red_cover_serial = CRUDRedCoverSerial(RedCoverSerial)
+red_cover_received = CRUDRedCoverReceived(RedCoverReceived)

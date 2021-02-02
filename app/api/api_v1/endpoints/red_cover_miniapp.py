@@ -8,8 +8,10 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, Body
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from starlette.requests import Request
 
 from app.api import deps
+from app.api.api_v1.endpoints.index import templates
 from app.controller import miniapp
 from app import schemas
 from app.schemas import MiniAppInviteUserCreate, MiniAppInviteUser, Cps, RedCover
@@ -112,3 +114,20 @@ def ad_track(
         }
     }
 
+
+@route.get("/{app_id}/cmVjZWl2ZWQ")
+def user_cover_received(
+        *,
+        db: Session = Depends(deps.get_db),
+        app_id: int,
+        receive_str: str,
+        request: Request,
+):
+    """用户领取封面"""
+    res = miniapp.do_received(db, app_id, receive_str)
+    if not res:
+        res = "输入有误"
+    return templates.TemplateResponse(
+        "received_cover.html",
+        {"request": request, "context": {"code": res}}
+    )

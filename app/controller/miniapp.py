@@ -8,7 +8,9 @@ from typing import Any, Optional
 import requests
 
 from app import crud
-from app.schemas import MiniAppUserCreate, MiniAppInviteUserCreate, WxAdCreate
+from app.schemas import MiniAppUserCreate, MiniAppInviteUserCreate, WxAdCreate, RedCoverReceivedCreate, \
+    RedCoverSerialUpdate
+from app import until
 
 
 def get_user_info(app_id: int, code: str, db):
@@ -101,7 +103,7 @@ def get_cover_detail(cover_id: int, openid: str, app_id: int, db: Any):
         "look_ad_count": look_ad_count,
         "invite_count": invite_count,
         "tips": [i.tip for i in tips],
-        "receive_data": cover.receive_desc if cover.is_free else f"领取封面-{cover.id}-{openid}",
+        "receive_data": cover.receive_desc if cover.is_free else f"领取封面-{until.encrypt.encode_id(cover.id)}-{openid}",
         "ad_config": {
             "one": "",
             "two": "",
@@ -145,3 +147,65 @@ def track_ad_history(
         )
     )
     return result
+
+
+def do_received(
+        db: Any, app_id: int, receive_str: str
+):
+    """领取封面"""
+    # 查询是否领取过
+    receive_info = receive_str.split("-")
+    if len(receive_info) != 3 or receive_info[0] != "领取封面":
+        return None
+    cover_id = until.encrypt.decode_id(receive_info[1])
+    # 校验红包封面
+    if not cover_id:
+        return None
+    cover = crud.red_cover.get(db, cover_id)
+    if not cover:
+        return None
+    openid = receive_info[2]
+    user = crud.mini_app_user.get_by_openid(db, openid)
+    # 校验用户是否存在
+    if not user:
+        return None
+    look_ad_count = crud.wx_ad.get_look_history_count(db, app_id, cover_id, openid)
+    invite_count = crud.mini_app_invite.get_invite_count(db, openid, app_id, cover_id)
+    # 校验用户任务是否完成
+    is_task_success = False
+    if cover.is_task_together:
+        if (
+                look_ad_count >= cover.ad_limit > 0
+        ) and (
+                invite_count >= cover.invite_limit > 0
+        ):
+            is_task_success = True
+    if is_task_success is False:
+        return None
+    # 校验用户是否领取过该封面
+    res = crud.red_cover_received.check_received(
+        db, app_id, cover_id, openid
+    )
+    if res:
+        return None
+    cover_serial = crud.red_cover_serial.get_effective_code(
+        db, app_id, cover_id
+    )
+    if cover_serial:
+        log = crud.red_cover_received.create(
+            db,
+            obj_in=RedCoverReceivedCreate(
+                app_id=app_id,
+                openid=openid,
+                cover_id=cover_id,
+                red_cover_serial=cover_serial.red_cover_serial
+            )
+        )
+        if log:
+            crud.red_cover_serial.update(
+                db, db_obj=cover_serial, obj_in=RedCoverSerialUpdate(
+                    status=False
+                )
+            )
+            return cover_serial.red_cover_serial
+    return None
