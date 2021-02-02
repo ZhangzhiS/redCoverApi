@@ -21,4 +21,4 @@ class RedCoverSerialCreate(RedCoverSerialBase):
 
 
 class RedCoverSerialUpdate(RedCoverSerialBase):
-    pass
+    status: bool = True

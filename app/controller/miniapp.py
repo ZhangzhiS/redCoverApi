@@ -156,19 +156,19 @@ def do_received(
     # 查询是否领取过
     receive_info = receive_str.split("-")
     if len(receive_info) != 3 or receive_info[0] != "领取封面":
-        return None
+        return "领取代码异常"
     cover_id = until.encrypt.decode_id(receive_info[1])
     # 校验红包封面
     if not cover_id:
-        return None
+        return "领取代码异常"
     cover = crud.red_cover.get(db, cover_id)
     if not cover:
-        return None
+        return "封面信息异常"
     openid = receive_info[2]
     user = crud.mini_app_user.get_by_openid(db, openid)
     # 校验用户是否存在
     if not user:
-        return None
+        return "用户信息异常"
     look_ad_count = crud.wx_ad.get_look_history_count(db, app_id, cover_id, openid)
     invite_count = crud.mini_app_invite.get_invite_count(db, openid, app_id, cover_id)
     # 校验用户任务是否完成
@@ -180,14 +180,20 @@ def do_received(
                 invite_count >= cover.invite_limit > 0
         ):
             is_task_success = True
+    if (
+            look_ad_count >= cover.ad_limit > 0
+    ) or (
+            invite_count >= cover.invite_limit > 0
+    ):
+        is_task_success = True
     if is_task_success is False:
-        return None
+        return "任务未完成"
     # 校验用户是否领取过该封面
     res = crud.red_cover_received.check_received(
         db, app_id, cover_id, openid
     )
     if res:
-        return None
+        return "已经领取过此封面了"
     cover_serial = crud.red_cover_serial.get_effective_code(
         db, app_id, cover_id
     )
@@ -204,8 +210,8 @@ def do_received(
         if log:
             crud.red_cover_serial.update(
                 db, db_obj=cover_serial, obj_in=RedCoverSerialUpdate(
-                    status=False
+                    status="f"
                 )
             )
             return cover_serial.red_cover_serial
-    return None
+    return "此封面今天已经送完了，公众号私信回复我补货呀！"
