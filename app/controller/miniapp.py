@@ -204,13 +204,13 @@ def do_received(
                 app_id=app_id,
                 openid=openid,
                 cover_id=cover_id,
-                red_cover_serial=cover_serial.red_cover_serial
+                red_cover_serial=f"{cover_serial.red_cover_serial}-{cover_serial.id}"
             )
         )
         if log:
-            crud.red_cover_serial.update(
+            cover_serial = crud.red_cover_serial.update(
                 db, db_obj=cover_serial, obj_in=RedCoverSerialUpdate(
-                    status="f"
+                    status=False
                 )
             )
             return cover_serial.red_cover_serial
