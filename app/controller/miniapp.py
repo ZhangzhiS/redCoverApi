@@ -40,7 +40,7 @@ def get_user_info(app_id: int, code: str, db):
         db, obj_in=MiniAppUserCreate(
             app_id=config.id,
             openid=openid,
-            session_key="t",
+            session_key=result.get("session_key"),
         )
     )
 
