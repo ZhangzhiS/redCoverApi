@@ -82,6 +82,7 @@ class RedCover(Base):
     is_task_together = Column(Boolean, comment="是否需要同时完成两个任务")
     is_in_stock = Column(Boolean, comment="活动是否还在进行")
     notice_show = Column(Boolean, comment="是否展示通知")
+    remarks = Column(String, comment="备注")
 
 
 class AdHistory(Base):
