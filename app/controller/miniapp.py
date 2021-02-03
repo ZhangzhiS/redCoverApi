@@ -94,14 +94,12 @@ def get_cover_detail(cover_id: int, openid: str, app_id: int, db: Any):
     cover = crud.red_cover.get(db, cover_id)
     if not cover:
         return {}
-    look_ad_count = crud.wx_ad.get_look_history_count(db, app_id, cover_id, openid)
-    invite_count = crud.mini_app_invite.get_invite_count(db, openid, app_id, cover_id)
     tips = crud.tip.get_tips_list(db, app_id, page="cover_detail", item_id=cover_id)
     is_task_success = False
     result = {
         "cover_detail": cover,
-        "look_ad_count": look_ad_count,
-        "invite_count": invite_count,
+        "look_ad_count": 0,
+        "invite_count": 0,
         "tips": [i.tip for i in tips],
         "receive_data": cover.receive_desc if cover.is_free else f"领取封面-{until.encrypt.encode_id(cover.id)}-{openid}",
         "ad_config": {
@@ -112,9 +110,21 @@ def get_cover_detail(cover_id: int, openid: str, app_id: int, db: Any):
             "five": ""
         }
     }
+    serial_count = crud.red_cover_serial.get_effective_code_count(
+        db, app_id, cover_id
+    )
+    if not serial_count:
+        cover.is_in_stock = False
+        result["cover"] = cover
+        result["tips"].append("今日这个封面封面已经送完啦")
+        return result
     if cover.is_free:
         result["is_task_success"] = is_task_success
         return result
+    invite_count = crud.mini_app_invite.get_invite_count(db, openid, app_id, cover_id)
+    look_ad_count = crud.wx_ad.get_look_history_count(db, app_id, cover_id, openid)
+    result["look_ad_count"] = look_ad_count
+    result["invite_count"] = invite_count
     if cover.is_task_together:
         if (
                 look_ad_count >= cover.ad_limit > 0
@@ -131,6 +141,7 @@ def get_cover_detail(cover_id: int, openid: str, app_id: int, db: Any):
         ):
             is_task_success = True
     result["is_task_success"] = is_task_success
+    result["tips"].append(f"今日剩余 {serial_count} 个，赶快行动啦！！")
     return result
 
 

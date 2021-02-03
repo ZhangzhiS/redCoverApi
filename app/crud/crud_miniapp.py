@@ -151,6 +151,15 @@ class CRUDRedCoverSerial(
             self.model.status.is_(True)
         ).first()
 
+    def get_effective_code_count(
+            self, db: Session, app_id: int, cover_id: int
+    ):
+        return db.query(self.model).filter(
+            self.model.app_id == app_id,
+            self.model.cover_id == cover_id,
+            self.model.status.is_(True)
+        ).count()
+
 
 mini_app_config = CRUDMiniAppConfig(MiniAppConfig)
 mini_app_user = CRUDMiniAppUser(MiniAppUser)
