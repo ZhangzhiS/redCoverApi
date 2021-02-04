@@ -95,24 +95,27 @@ def get_cover_detail(
     return miniapp.get_cover_detail(cover_id, openid, app_id, db)
 
 
-@route.get("/{app_id}/ad/track")
-def ad_track(
+class AdTrack(BaseModel):
+    openid: str
+    status: bool
+    cover_id: int
+
+
+@route.post("/{app_id}/ad/track")
+def do_ad_track(
         *,
         db: Session = Depends(deps.get_db),
         app_id: int,
-        openid: str,
+        ad_track: AdTrack = Body(None)
 ):
 
-    return {
-        "app_id": app_id,
-        "ad_config": {
-            "one": "",
-            "two": "",
-            "three": "",
-            "four": "",
-            "five": ""
-        }
-    }
+    return miniapp.track_ad_history(
+        app_id=app_id,
+        openid=ad_track.openid,
+        cover_id=ad_track.cover_id,
+        status=ad_track.status,
+        db=db
+    )
 
 
 @route.get("/{app_id}/cmVjZWl2ZWQ")

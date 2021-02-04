@@ -103,11 +103,11 @@ def get_cover_detail(cover_id: int, openid: str, app_id: int, db: Any):
         "tips": [i.tip for i in tips],
         "receive_data": cover.receive_desc if cover.is_free else f"领取封面-{until.encrypt.encode_id(cover.id)}-{openid}",
         "ad_config": {
-            "one": "",
+            "one": "adunit-3884b8f5192b9868",
             "two": "",
-            "three": "",
+            "three": "adunit-fc697f665fcf28ba",
             "four": "",
-            "five": ""
+            "five": "adunit-f6d825b73120a46c"
         }
     }
     serial_count = crud.red_cover_serial.get_effective_code_count(
